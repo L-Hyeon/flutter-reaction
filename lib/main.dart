@@ -35,7 +35,7 @@ class HomePage extends StatelessWidget {
               height: 70,
               child: RaisedButton(
                 onPressed: (){
-                  Navigator.pushNamedAndRemoveUntil(context, '/test', (route) => false);
+                  Navigator.pushNamed(context, '/test');
                 },
                 color: Colors.white,
                 child: const TText(
