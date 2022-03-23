@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:reaction/styledtext.dart';
+import 'package:reaction/result.dart';
 import 'dart:async';
 import 'dart:math';
-import 'package:reaction/result_page.dart';
 
 class TestPage extends StatefulWidget {
   const TestPage({Key? key}) : super(key: key);
@@ -21,7 +22,7 @@ class _TestPageState extends State<TestPage> {
   int idx = 0;
 
   void startTimer(){
-    timer = Timer.periodic(const Duration(milliseconds: 1), (timer) {
+    timer = Timer.periodic(const Duration(milliseconds: 10), (timer) {
       setState(() {
         sec -= 1;
         if (sec == 0) {
@@ -43,13 +44,15 @@ class _TestPageState extends State<TestPage> {
       Fluttertoast.showToast(msg: "종료하려면 한 번 더 누르세요");
       return Future.value(false);
     }
+    stopTimer();
+    dispose();
     return Future.value(true);
   }
 
   @override
   void initState() {
     super.initState();
-    sec = 500 + Random().nextInt(1500);
+    sec = 100 + Random().nextInt(500);
     startTimer();
   }
 
@@ -70,9 +73,9 @@ class _TestPageState extends State<TestPage> {
               else if (state == 1){
                 // touch
                 stopTimer();
-                records[idx] = -sec;
+                records[idx] = -(sec);
                 idx += 1;
-                sec = 500 + Random().nextInt(1500);
+                sec = 100 + Random().nextInt(500);
                 state = 3;
               }
               else if (state == 3){
@@ -83,78 +86,71 @@ class _TestPageState extends State<TestPage> {
                 }
                 else {
                   Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (BuildContext context) => ResultPage(records: records)), (route) => false);
+                  dispose();
                 }
               }
               else if (state == 2){
                 // too fast
                 state = 0;
-                sec = 500 + Random().nextInt(1500);
+                sec = 100 + Random().nextInt(500);
                 startTimer();
               }
             });
           },
-          child: (state == 3) ? Container(
-            color: Colors.blueAccent,
+          child: (state == 3) ? DecoratedBox(
+            decoration: BoxDecoration(
+              color: Colors.blueAccent
+            ),
             child: Center(
-              child: Text(
-                records[idx - 1].toString(),
-                style: const TextStyle(
-                  fontFamily: "c24",
-                  fontSize: 50,
-                  color: Colors.white
-                ),
-              )
-            )
-          ) : contents[state],
-        ),
-      ),
+              child: StyledText(
+                text: records[idx - 1].toString(),
+                size: 50,
+                color: true,
+              ),
+            ),
+          ) : contents[state]
+        )
+      )
     );
   }
 
-  List<Container> contents = [
-    Container(
-      //Ready
-      color: Colors.white,
-      child: const Center(
-        child:Text(
-          "Ready",
-          style: TextStyle(
-            fontFamily: "c24",
-            fontSize: 50,
-            color: Color(0xff00c95e)
-          ),
-        )
+  List<DecoratedBox> contents = [
+    DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xff00c288)
+      ),
+      child: Center(
+        child: StyledText(
+          text: "Ready",
+          size: 50,
+          color: true,
+        ),
       ),
     ),
-    Container(
-      //Touch
-      color: const Color(0xff00c95e),
-      child: const Center(
-        child:Text(
-          "Touch",
-          style: TextStyle(
-            fontFamily: "c24",
-            fontSize: 50,
-            color: Colors.white
-          ),
-        )
+    DecoratedBox(
+      decoration: BoxDecoration(
+          color: const Color(0xffffffff)
+      ),
+      child: Center(
+        child: StyledText(
+          text: "Touch",
+          size: 50,
+          color: false,
+        ),
       ),
     ),
-    Container(
-      //Too fast
-      color: Colors.redAccent,
-      child: const Center(
-          child:Text(
-            "Too Fast",
-            style: TextStyle(
-                fontFamily: "c24",
-                fontSize: 50,
-                color: Colors.white
-            ),
-          )
+    DecoratedBox(
+      decoration: BoxDecoration(
+          color: Colors.redAccent
       ),
-    )
+      child: Center(
+        child: StyledText(
+          text: "Too Fast...",
+          size: 50,
+          color: true,
+        ),
+      ),
+    ),
+
   ];
-
 }
-
